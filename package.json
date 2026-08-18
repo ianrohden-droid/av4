@@ -1,0 +1,15 @@
+{
+  "name": "organizador-tarefas",
+  "version": "1.0.0",
+  "description": "Organizador de tarefas e eventos",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
