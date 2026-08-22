@@ -8,17 +8,30 @@
   </head>
   <body>
     <div class="container">
-      <header>
-        <h1>Organizador de Tarefas</h1>
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Agenda digital</p>
+          <h1>Organizador de Tarefas</h1>
+        </div>
+        <div id="contador-tarefas" class="contador-tarefas"></div>
       </header>
 
-      <main>
+      <main class="layout">
         <section class="card form-section">
-          <h2>Nova tarefa</h2>
+          <div class="section-title">
+            <span class="icon">✏️</span>
+            <h2>Nova tarefa</h2>
+          </div>
+
           <form id="form-tarefa">
             <div class="field-group">
               <label for="titulo">Título</label>
-              <input type="text" id="titulo" name="titulo" required />
+              <input type="text" id="titulo" name="titulo" placeholder="Ex: Estudar para a prova" required />
+            </div>
+
+            <div class="field-group">
+              <label for="descricao">Descrição</label>
+              <textarea id="descricao" name="descricao" rows="4" placeholder="Detalhes, objetivos ou lembretes..."></textarea>
             </div>
 
             <div class="row">
@@ -57,16 +70,16 @@
               </div>
             </div>
 
-            <div class="field-group">
-              <label for="descricao">Descrição</label>
-              <textarea id="descricao" name="descricao" rows="3"></textarea>
-            </div>
-
-            <button type="submit" class="primary-btn">Adicionar Tarefa</button>
+            <button type="submit" class="primary-btn">Adicionar tarefa</button>
           </form>
         </section>
 
         <section class="card list-section">
+          <div class="section-title">
+            <span class="icon">📋</span>
+            <h2>Agenda</h2>
+          </div>
+
           <div class="filters">
             <div class="field-group small">
               <label for="filtro-status">Status</label>
@@ -94,6 +107,8 @@
         </section>
       </main>
     </div>
+
+    <div id="toast" class="toast" aria-live="polite"></div>
 
     <script src="/script.js"></script>
   </body>
