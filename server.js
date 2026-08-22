@@ -14,14 +14,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const lerTarefas = () => {
   const conteudo = fs.readFileSync(arquivoTarefas, 'utf-8');
-  return JSON.parse(conteudo || '[]');
+  const tarefas = JSON.parse(conteudo || '[]');
+  return Array.isArray(tarefas) ? tarefas : [];
 };
 
 const salvarTarefas = (tarefas) => {
   fs.writeFileSync(arquivoTarefas, JSON.stringify(tarefas, null, 2));
 };
 
-const validarTarefa = (tarefa) => {
+const validarTarefa = (tarefa = {}) => {
   const { titulo, data, categoria, prioridade } = tarefa;
 
   if (!titulo || !titulo.trim()) {
@@ -43,10 +44,17 @@ const validarTarefa = (tarefa) => {
   return null;
 };
 
+const ordenarTarefas = (lista) => {
+  return [...lista].sort((a, b) => {
+    const dataA = new Date(`${a.data}T${a.horario || '00:00'}`);
+    const dataB = new Date(`${b.data}T${b.horario || '00:00'}`);
+    return dataA - dataB;
+  });
+};
+
 app.get('/tarefas', (req, res) => {
   try {
-    const tarefas = lerTarefas();
-    tarefas.sort((a, b) => new Date(a.data) - new Date(b.data));
+    const tarefas = ordenarTarefas(lerTarefas());
     res.json(tarefas);
   } catch (error) {
     res.status(500).json({ erro: 'Erro ao buscar tarefas.' });
@@ -55,7 +63,7 @@ app.get('/tarefas', (req, res) => {
 
 app.post('/tarefas', (req, res) => {
   try {
-    const novaTarefa = req.body;
+    const novaTarefa = req.body || {};
     const erro = validarTarefa(novaTarefa);
 
     if (erro) {
@@ -63,8 +71,7 @@ app.post('/tarefas', (req, res) => {
     }
 
     const tarefas = lerTarefas();
-    const ultimaTarefa = tarefas[tarefas.length - 1];
-    const proximoId = ultimaTarefa ? ultimaTarefa.id + 1 : 1;
+    const proximoId = tarefas.reduce((maior, tarefa) => Math.max(maior, Number(tarefa.id) || 0), 0) + 1;
 
     const tarefaSalva = {
       id: proximoId,
@@ -89,7 +96,6 @@ app.post('/tarefas', (req, res) => {
 app.put('/tarefas/:id', (req, res) => {
   try {
     const { id } = req.params;
-    const { concluida } = req.body;
     const tarefas = lerTarefas();
     const tarefa = tarefas.find((item) => item.id === Number(id));
 
@@ -97,7 +103,7 @@ app.put('/tarefas/:id', (req, res) => {
       return res.status(404).json({ erro: 'Tarefa não encontrada.' });
     }
 
-    tarefa.concluida = Boolean(concluida);
+    tarefa.concluida = Boolean(req.body?.concluida);
     salvarTarefas(tarefas);
 
     return res.json(tarefa);
